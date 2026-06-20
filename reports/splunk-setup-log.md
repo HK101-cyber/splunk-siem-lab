@@ -52,3 +52,12 @@
 
 ## Phase 6 — Threat Hunts (Pending)
 - [ ] 4 threat hunt reports
+
+## Phase 3 — Windows Universal Forwarder ✅
+- [x] Splunk Universal Forwarder installed on Windows
+- [x] Receiving indexer set to 192.168.56.101:9997
+- [x] Security, System, Application logs configured
+- [x] Sysmon Operational logs configured
+- [x] Port 9997 enabled on Splunk server
+- [x] Windows logs flowing into windows_logs index
+- [x] Screenshots taken and pushed
