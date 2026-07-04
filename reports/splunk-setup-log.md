@@ -61,3 +61,12 @@
 - [x] Port 9997 enabled on Splunk server
 - [x] Windows logs flowing into windows_logs index
 - [x] Screenshots taken and pushed
+
+## Phase 4 — Dashboard 1 Complete ✅
+- [x] Linux Authentication Analytics dashboard built
+- [x] 6 panels created with real data
+- [x] Hydra brute force attack used to generate data
+- [x] SPL queries documented
+- [x] Dashboard exported as XML
+- [x] Screenshots taken and transferred
+- [x] Pushed to GitHub
