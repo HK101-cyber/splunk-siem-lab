@@ -40,7 +40,7 @@
 |--------|-------|-------|--------|
 | Ubuntu auth.log | Splunk Monitor | linux_logs | 753+ |
 | Ubuntu syslog | Splunk Monitor | linux_logs | 22,212+ |
-| Windows Event Logs | Universal Forwarder | windows_logs | Active |
+| Windows Event Logs | Universal Forwarder | windows_logs | 9,743+ |
 | Windows Sysmon | Universal Forwarder | windows_logs | Active |
 
 ---
@@ -60,7 +60,7 @@
 | # | Dashboard | Panels | Status |
 |---|-----------|--------|--------|
 | 1 | Linux Authentication Analytics | 6 | ✅ Complete |
-| 2 | Windows Security Analytics | 6 | ⬜ Pending |
+| 2 | Windows Security Analytics | 6 | ✅ Complete |
 | 3 | Threat Timeline | 6 | ⬜ Pending |
 | 4 | User Behavior Analytics | 6 | ⬜ Pending |
 | 5 | SOC Operations | 6 | ⬜ Pending |
