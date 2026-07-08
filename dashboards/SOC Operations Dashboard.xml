@@ -1,0 +1,92 @@
+<dashboard version="1.1" theme="dark">
+  <label>SOC Operations Dashboard</label>
+  <row>
+    <panel>
+      <single>
+        <title>Total Events Ingested (24h)</title>
+        <search>
+          <query>index=linux_logs OR index=windows_logs
+| stats count as "Total Events"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Log Volume by Source</title>
+        <search>
+          <query>index=linux_logs OR index=windows_logs
+| stats count by index</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>High Severity Security Events</title>
+        <search>
+          <query>(index=linux_logs sourcetype=linux_secure Failed) OR (index=windows_logs EventCode=4625)
+| stats count as "High Severity Events"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Event Volume Timeline</title>
+        <search>
+          <query>index=linux_logs OR index=windows_logs
+| timechart count by index</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Data Source Health Check</title>
+        <search>
+          <query>index=linux_logs OR index=windows_logs
+| stats count by sourcetype
+| sort -count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Average Indexing Latency</title>
+        <search>
+          <query>index=linux_logs OR index=windows_logs
+| eval lag=_indextime-_time
+| stats avg(lag) as "Avg Indexing Delay (sec)"</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+</dashboard>

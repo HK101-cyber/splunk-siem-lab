@@ -1,0 +1,96 @@
+<dashboard version="1.1" theme="dark">
+  <label>Threat Timeline Dashboard</label>
+  <row>
+    <panel>
+      <chart>
+        <title>Combined Attack Timeline</title>
+        <search>
+          <query>(index=linux_logs sourcetype=linux_secure Failed) OR (index=windows_logs EventCode=4625)
+| timechart count by index</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Total Threat Events</title>
+        <search>
+          <query>(index=linux_logs sourcetype=linux_secure Failed) OR (index=windows_logs EventCode=4625)
+| stats count as "Total Threats"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Linux vs Windows Attack Distribution</title>
+        <search>
+          <query>(index=linux_logs sourcetype=linux_secure Failed) OR (index=windows_logs EventCode=4625)
+| stats count by index</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Top Attacking IPs</title>
+        <search>
+          <query>index=linux_logs sourcetype=linux_secure Failed
+| rex field=_raw "from (?&lt;attacker_ip&gt;\d+\.\d+\.\d+\.\d+)"
+| stats count by attacker_ip
+| sort -count
+| head 10</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Attack Techniques Over Time</title>
+        <search>
+          <query>index=linux_logs sourcetype=linux_secure
+| eval technique=case(match(_raw,"Failed password"),"Brute Force",match(_raw,"sudo"),"Privilege Escalation",true(),"Other")
+| timechart count by technique</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Sudo Command Executions</title>
+        <search>
+          <query>index=linux_logs sourcetype=linux_secure sudo
+| stats count as "Sudo Events"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+</dashboard>

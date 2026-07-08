@@ -1,0 +1,107 @@
+<dashboard version="1.1" theme="dark">
+  <label>User Behavior Analytics</label>
+  <row>
+    <panel>
+      <chart>
+        <title>User Login Activity</title>
+        <search>
+          <query>index=linux_logs sourcetype=linux_secure Accepted
+| rex field=_raw "for (?&lt;username&gt;\w+) from"
+| stats count by username
+| sort -count</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Sudo Command Users</title>
+        <search>
+          <query>index=linux_logs sourcetype=linux_secure sudo
+| rex field=_raw "(?i)(?&lt;sudo_user&gt;hammad|root)"
+| stats count by sudo_user
+| head 10</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Windows User Login Activity</title>
+        <search>
+          <query>index=* EventCode=4624 
+| eval Windows_User = mvindex(Account_Name, 1)
+| search Windows_User!="*$" Windows_User!="SYSTEM"
+| stats count by Windows_User
+| sort -count
+| head 10</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Login Time Patterns</title>
+        <search>
+          <query>index=linux_logs sourcetype=linux_secure Accepted
+| eval hour=strftime(_time, "%H")
+| stats count by hour
+| sort hour</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Unique Users with Failed Logins</title>
+        <search>
+          <query>index=windows_logs EventCode=4625 OR EventID=4625
+| eval Failed_User = coalesce(TargetUserName, Account_Name, user)
+| search Failed_User!="*$" Failed_User!="SYSTEM"
+| stats dc(Failed_User) as "Unique Failed Users"</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Command Execution Volume Over Time</title>
+        <search>
+          <query>index=linux_logs sourcetype=linux_secure
+| timechart count as "Total Commands"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

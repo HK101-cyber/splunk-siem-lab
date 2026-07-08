@@ -1,0 +1,94 @@
+<dashboard version="1.1" theme="dark">
+  <label>Windows Security Analytics</label>
+  <row>
+    <panel>
+      <single>
+        <title>Total Windows Security Event</title>
+        <search>
+          <query>index=windows_logs sourcetype="WinEventLog:Security"
+| stats count as "Security Events"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Windows Security Events Timeline</title>
+        <search>
+          <query>index=windows_logs sourcetype="WinEventLog:Security"
+| timechart count as "Security Events"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Failed Windows Logins (Event 4625)</title>
+        <search>
+          <query>index=windows_logs sourcetype="WinEventLog:Security" EventCode=4625
+| stats count as "Failed Logins"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Top Windows Event IDs</title>
+        <search>
+          <query>index=windows_logs sourcetype="WinEventLog:Security"
+| stats count by EventCode
+| sort -count
+| head 10</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Successful Windows Logins (Event 4624)</title>
+        <search>
+          <query>index=windows_logs sourcetype="WinEventLog:Security" EventCode=4624
+| stats count as "Successful Logins"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Windows Log Sources Distribution</title>
+        <search>
+          <query>index=windows_logs
+| stats count by sourcetype</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>
