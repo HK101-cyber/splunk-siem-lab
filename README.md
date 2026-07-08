@@ -63,7 +63,7 @@
 | 2 | Windows Security Analytics | 6 | ✅ Complete |
 | 3 | Threat Timeline | 6 | ✅ Complete |
 | 4 | User Behavior Analytics | 6 | ✅ Complete |
-| 5 | SOC Operations | 6 | ⬜ Pending |
+| 5 | SOC Operations | 6 | ✅ Complete |
 
 ---
 
