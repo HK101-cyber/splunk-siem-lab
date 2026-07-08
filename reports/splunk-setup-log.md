@@ -79,3 +79,11 @@
 - [x] Event IDs 4624 and 4625 verified
 - [x] Dashboard saved and documented
 - [x] Screenshots taken and pushed
+
+## Phase 6 — Dashboard 3 Complete ✅
+- [x] Threat Timeline Dashboard built
+- [x] 6 panels showing cross-platform correlation
+- [x] Attack data generated (Hydra, sudo, Windows failed logins)
+- [x] Dashboard exported as XML
+- [x] Screenshots taken and pushed
+- [x] UFW firewall fixed for cross-lab compatibility
