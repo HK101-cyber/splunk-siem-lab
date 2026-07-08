@@ -61,8 +61,8 @@
 |---|-----------|--------|--------|
 | 1 | Linux Authentication Analytics | 6 | ✅ Complete |
 | 2 | Windows Security Analytics | 6 | ✅ Complete |
-| 3 | Threat Timeline | 6 | ⬜ Pending |
-| 4 | User Behavior Analytics | 6 | ⬜ Pending |
+| 3 | Threat Timeline | 6 | ✅ Complete |
+| 4 | User Behavior Analytics | 6 | ✅ Complete |
 | 5 | SOC Operations | 6 | ⬜ Pending |
 
 ---
