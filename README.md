@@ -40,8 +40,14 @@
 |--------|-------|-------|--------|
 | Ubuntu auth.log | Splunk Monitor | linux_logs | 753+ |
 | Ubuntu syslog | Splunk Monitor | linux_logs | 22,212+ |
-| Windows Event Logs | Universal Forwarder | windows_logs | 9,743+ |
-| Windows Sysmon | Universal Forwarder | windows_logs | Active |
+| Windows Security/System/App | Universal Forwarder | windows_logs | 9,743+ |
+| Windows Sysmon | Local Event Viewer | N/A | 44,930 (see limitation note) |
+
+**Note:** Sysmon telemetry is fully operational (44,930 events)
+but not ingested via Splunk Universal Forwarder due to a
+Windows Event Log channel ACL restriction. Full details in
+`detection-rules/README.md`. This same telemetry source is
+successfully ingested in the companion ELK lab via Winlogbeat.
 
 ---
 
@@ -65,22 +71,26 @@
 | 4 | User Behavior Analytics | 6 | ✅ Complete |
 | 5 | SOC Operations | 6 | ✅ Complete |
 
+**Total: 5 dashboards, 30 panels**
+
 ---
 
-## Detection Alerts
+## Detection Alerts — 10/10 Active
 
 | # | Alert | MITRE | Severity | Status |
 |---|-------|-------|----------|--------|
-| 1 | SSH Brute Force | T1110 | High | ✅ Active |
+| 1 | SSH Brute Force Detection | T1110 | High | ✅ Active |
+| 2 | Privilege Escalation via Sudo | T1548 | High | ✅ Active |
+| 3 | Successful Login After Failed Attempts | T1110 | Critical | ✅ Active |
+| 4 | Windows Failed Login Threshold | T1110 | High | ✅ Active |
+| 5 | New Admin Account Created | T1136.001 | Critical | ✅ Active |
+| 6 | Scheduled Task Created | T1053.005 | High | ✅ Active |
+| 7 | Event Log Cleared | T1070.001 | Critical | ✅ Active |
+| 8 | PowerShell Process Execution | T1059.001 | High | ✅ Active |
 | 9 | Reverse Shell Indicators | T1059.004 | Critical | ✅ Active |
-| 3 | Cron Job Modified | T1053.003 | High | ⬜ Pending |
-| 4 | Log File Cleared | T1070.002 | High | ⬜ Pending |
-| 5 | Sudo to Root | T1548.003 | High | ⬜ Pending |
-| 6 | New Admin Account | T1136.001 | Critical | ⬜ Pending |
-| 7 | Scheduled Task Created | T1053.005 | High | ⬜ Pending |
-| 8 | Event Log Cleared | T1070.001 | High | ⬜ Pending |
-| 9 | Encoded PowerShell | T1059.001 | High | ⬜ Pending |
-| 10 | Login After Failures | T1110 | Medium | ⬜ Pending |
+| 10 | Log File Tampering | T1070.002 | Critical | ✅ Active |
+
+All alerts run on schedule: `*/5 * * * *`
 
 ---
 
@@ -88,14 +98,18 @@
 
 | # | Attack | Tool | MITRE | Status |
 |---|--------|------|-------|--------|
-| 1 | SSH Password Spray | Hydra | T1110.003 | ⬜ Pending |
-| 2 | Reverse Shell | Netcat | T1059.004 | ⬜ Pending |
-| 3 | Cron Persistence | crontab | T1053.003 | ⬜ Pending |
-| 4 | Log Tampering | truncate | T1070.002 | ⬜ Pending |
-| 5 | New Admin Account | net user | T1136.001 | ⬜ Pending |
-| 6 | Scheduled Task | schtasks | T1053.005 | ⬜ Pending |
-| 7 | Event Log Clearing | wevtutil | T1070.001 | ⬜ Pending |
-| 8 | Encoded PowerShell | PowerShell | T1059.001 | ⬜ Pending |
+| 1 | SSH Brute Force | Hydra | T1110 | ✅ Data Generated |
+| 2 | Reverse Shell Indicators | logger/simulated | T1059.004 | ✅ Data Generated |
+| 3 | Log Tampering | logger/simulated | T1070.002 | ✅ Data Generated |
+| 4 | Privilege Escalation | sudo commands | T1548 | ✅ Data Generated |
+| 5 | New Admin Account (Windows) | net user | T1136.001 | ⬜ Pending Formal Sim |
+| 6 | Scheduled Task (Windows) | schtasks | T1053.005 | ✅ Data Generated |
+| 7 | Event Log Clearing (Windows) | wevtutil | T1070.001 | ✅ Data Generated |
+| 8 | PowerShell Execution (Windows) | PowerShell -EncodedCommand | T1059.001 | ✅ Data Generated |
+
+**Note:** Data has been generated for alert testing purposes.
+Formal simulation write-ups with full evidence chains pending
+in `attack-simulations/` folder.
 
 ---
 
@@ -111,7 +125,6 @@
 ---
 
 ## Repository Structure
-
 splunk-siem-lab/
 ├── configs/
 │   ├── inputs.conf
@@ -121,18 +134,22 @@ splunk-siem-lab/
 ├── searches/
 │   └── spl-queries.md
 ├── detection-rules/
-│   └── README.md
+│   └── README.md          (all 10 alerts + Sysmon limitation)
 ├── dashboards/
 │   ├── linux-auth-dashboard.xml
-│   └── dashboard1-linux-auth.md
+│   ├── Windows Security Analytics.xml
+│   ├── Threat Timeline.xml
+│   ├── User Behavior Analytics.xml
+│   ├── SOC Operations Dashboard.xml
+│   └── dashboard1-5 documentation (.md)
 ├── attack-simulations/
-│   ├── screenshots/
 │   └── README.md
 ├── threat-hunts/
 │   └── README.md
 ├── reports/
 │   └── splunk-setup-log.md
 └── screenshots/
+
 ---
 
 ## ELK vs Splunk Comparison
@@ -145,6 +162,7 @@ splunk-siem-lab/
 | Enterprise Adoption | Growing | Dominant |
 | Dashboards | Kibana | Splunk Web |
 | Agents | Filebeat | Universal Forwarder |
+| Sysmon Ingestion | ✅ Works (Winlogbeat) | ⚠️ ACL restriction (documented) |
 | Learning Curve | Moderate | Moderate |
 
 ---
@@ -163,14 +181,12 @@ index=linux_logs sourcetype=linux_secure
 
 # Windows Failed Logins
 index=windows_logs EventCode=4625
-| stats count by src_ip user
-| sort -count
+| stats count
 
-# Top Processes (Sysmon)
-index=windows_logs source="WinEventLog:Sysmon"
-EventCode=1
-| stats count by process_name
-| sort -count
+# PowerShell Execution (Security log workaround)
+index=windows_logs sourcetype="WinEventLog:Security" EventCode=4688
+| search "*powershell*"
+| stats count
 ```
 
 ---
@@ -185,6 +201,9 @@ EventCode=1
 | Jun 20, 2026 | Windows Universal Forwarder installed |
 | Jun 20, 2026 | windows_logs index receiving Windows events |
 | Jul 2, 2026 | Dashboard 1 — Linux Auth Analytics complete |
+| Jul 5, 2026 | Dashboards 2-5 complete — all 30 panels live |
+| Jul 8, 2026 | All 10 detection alerts deployed and active |
+| Jul 9, 2026 | Sysmon ACL limitation identified, documented, workaround built |
 
 ---
 
