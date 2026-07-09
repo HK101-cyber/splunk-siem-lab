@@ -109,3 +109,12 @@
 3. Threat Timeline ✅
 4. User Behavior Analytics ✅
 5. SOC Operations ✅
+
+## Phase 9 — All 10 Detection Alerts Complete ✅
+- [x] 6 Linux alerts deployed and enabled
+- [x] 5 Windows alerts deployed and enabled
+- [x] All alerts scheduled every 5 minutes
+- [x] MITRE ATT&CK mapped for all alerts
+- [x] Sysmon-via-Splunk limitation documented professionally
+- [x] Alert 8 rebuilt using Event 4688 as workaround
+- [x] Screenshots taken and pushed

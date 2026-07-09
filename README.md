@@ -71,8 +71,8 @@
 
 | # | Alert | MITRE | Severity | Status |
 |---|-------|-------|----------|--------|
-| 1 | SSH Password Spray | T1110.003 | High | ⬜ Pending |
-| 2 | Linux Reverse Shell | T1059.004 | Critical | ⬜ Pending |
+| 1 | SSH Brute Force | T1110 | High | ✅ Active |
+| 9 | Reverse Shell Indicators | T1059.004 | Critical | ✅ Active |
 | 3 | Cron Job Modified | T1053.003 | High | ⬜ Pending |
 | 4 | Log File Cleared | T1070.002 | High | ⬜ Pending |
 | 5 | Sudo to Root | T1548.003 | High | ⬜ Pending |
