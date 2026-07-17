@@ -118,3 +118,10 @@
 - [x] Sysmon-via-Splunk limitation documented professionally
 - [x] Alert 8 rebuilt using Event 4688 as workaround
 - [x] Screenshots taken and pushed
+
+## Attack Simulations Complete
+- [x] All 8 attack simulations executed from Kali and internal
+- [x] All 10 detection alerts confirmed triggered (100% rate)
+- [x] Full evidence chain documented per simulation
+- [x] Attack kill chain narrative documented
+- [x] Screenshots captured and pushed

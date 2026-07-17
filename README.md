@@ -102,7 +102,7 @@ All alerts run on schedule: `*/5 * * * *`
 | 2 | Reverse Shell Indicators | logger/simulated | T1059.004 | ✅ Data Generated |
 | 3 | Log Tampering | logger/simulated | T1070.002 | ✅ Data Generated |
 | 4 | Privilege Escalation | sudo commands | T1548 | ✅ Data Generated |
-| 5 | New Admin Account (Windows) | net user | T1136.001 | ⬜ Pending Formal Sim |
+| 5 | New Admin Account (Windows) | net user | T1136.001 | ✅ Confirmed Formal Sim |
 | 6 | Scheduled Task (Windows) | schtasks | T1053.005 | ✅ Data Generated |
 | 7 | Event Log Clearing (Windows) | wevtutil | T1070.001 | ✅ Data Generated |
 | 8 | PowerShell Execution (Windows) | PowerShell -EncodedCommand | T1059.001 | ✅ Data Generated |
