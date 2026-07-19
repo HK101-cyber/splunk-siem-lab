@@ -1,12 +1,16 @@
 # Splunk SIEM Lab — Enterprise Security Monitoring
 
-![Status](https://img.shields.io/badge/Status-Active%20Build-green)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 ![Splunk](https://img.shields.io/badge/Splunk-10.4.0-orange)
 ![Platform](https://img.shields.io/badge/Platform-Ubuntu%2022.04-blue)
 
 > A complete enterprise Splunk SIEM lab with Linux and Windows
 > log ingestion, SPL detection rules, attack simulations,
 > and threat hunting reports.
+
+![Linux Authentication Dashboard Preview](screenshots/splunk-dashboard1-complete.png)
+
+📄 **[Read the Full Final Report](reports/splunk-lab-final-report.md)** — includes embedded screenshots for every dashboard, alert, attack simulation, and threat hunt.
 
 ---
 
@@ -16,8 +20,9 @@
 |-------|---------|
 | Author | Hammad Khan |
 | Start Date | June 2026 |
+| Last Updated | July 19, 2026 |
 | Splunk Version | Enterprise 10.4.0 |
-| Status | Active Build |
+| Status | ✅ Complete |
 | GitHub | github.com/HK101-cyber |
 
 ---
@@ -27,7 +32,7 @@
 | Component | Details |
 |-----------|---------|
 | SIEM Server | Ubuntu Server 22.04 (192.168.56.101) |
-| Attacker | Kali Linux (192.168.56.100) |
+| Attacker | Kali Linux (192.168.56.102) |
 | Windows Host | Windows 10/11 |
 | Splunk Web | http://192.168.56.101:8000 |
 | Forwarder Port | 9997 |
@@ -91,36 +96,37 @@ successfully ingested in the companion ELK lab via Winlogbeat.
 | 10 | Log File Tampering | T1070.002 | Critical | ✅ Active |
 
 All alerts run on schedule: `*/5 * * * *`
+**Detection Rate: 10/10 (100%) validated against real attack simulations**
 
 ---
 
-## Attack Simulations
+## Attack Simulations — 8/8 Complete
 
 | # | Attack | Tool | MITRE | Status |
 |---|--------|------|-------|--------|
-| 1 | SSH Brute Force | Hydra | T1110 | ✅ Data Generated |
-| 2 | Reverse Shell Indicators | logger/simulated | T1059.004 | ✅ Data Generated |
-| 3 | Log Tampering | logger/simulated | T1070.002 | ✅ Data Generated |
-| 4 | Privilege Escalation | sudo commands | T1548 | ✅ Data Generated |
-| 5 | New Admin Account (Windows) | net user | T1136.001 | ✅ Confirmed Formal Sim |
-| 6 | Scheduled Task (Windows) | schtasks | T1053.005 | ✅ Data Generated |
-| 7 | Event Log Clearing (Windows) | wevtutil | T1070.001 | ✅ Data Generated |
-| 8 | PowerShell Execution (Windows) | PowerShell -EncodedCommand | T1059.001 | ✅ Data Generated |
+| 1 | SSH Brute Force | Hydra | T1110 | ✅ Confirmed |
+| 2 | Username Enumeration | sshpass | T1110.001 | ✅ Confirmed |
+| 3 | Lateral Movement | SSH | T1021.004 | ✅ Confirmed |
+| 4 | Privilege Escalation | sudo commands | T1548 | ✅ Confirmed |
+| 5 | Reverse Shell Indicators | logger/simulated | T1059.004 | ✅ Confirmed |
+| 6 | Log Tampering | logger/simulated | T1070.002 | ✅ Confirmed |
+| 7 | New Admin Account (Windows) | net user | T1136.001 | ✅ Confirmed |
+| 8 | Scheduled Task + PowerShell + Log Clear (Windows) | schtasks/PowerShell/wevtutil | T1053.005, T1059.001, T1070.001 | ✅ Confirmed |
 
-**Note:** Data has been generated for alert testing purposes.
-Formal simulation write-ups with full evidence chains pending
-in `attack-simulations/` folder.
+**Alert Fire Rate: 10/10 (100%)**
 
 ---
 
-## Threat Hunts
+## Threat Hunts — 4/4 Complete
 
-| # | Hunt | Status |
-|---|------|--------|
-| 1 | Password Spray vs Brute Force | ⬜ Pending |
-| 2 | Persistence Mechanisms | ⬜ Pending |
-| 3 | Anti-Forensics Activity | ⬜ Pending |
-| 4 | Lateral Movement Kill Chain | ⬜ Pending |
+| # | Hunt | Key Finding | Status |
+|---|------|-------------|--------|
+| 1 | SSH Brute Force Patterns | 173 attempts from 192.168.56.102 targeting root | ✅ Confirmed |
+| 2 | Privilege Escalation | 180 sudo events, 58% touching sensitive files | ✅ Confirmed |
+| 3 | Lateral Movement | 1 anomalous login vs 13-session baseline | ✅ Confirmed |
+| 4 | Persistence & Anti-Forensics | Scheduled task + log clearing detected | ✅ Confirmed |
+
+**Complete attack kill chain reconstructed through threat hunting.**
 
 ---
 
@@ -143,11 +149,16 @@ splunk-siem-lab/
 │   ├── SOC Operations Dashboard.xml
 │   └── dashboard1-5 documentation (.md)
 ├── attack-simulations/
+│   ├── simulation-01 through 08 (.md)
+│   ├── screenshots/
 │   └── README.md
 ├── threat-hunts/
+│   ├── hunt-01 through 04 (.md)
+│   ├── screenshots (splunk-hunt01-04)
 │   └── README.md
 ├── reports/
-│   └── splunk-setup-log.md
+│   ├── splunk-setup-log.md
+│   └── splunk-lab-final-report.md
 └── screenshots/
 
 ---
@@ -175,9 +186,10 @@ index=linux_logs sourcetype=linux_secure Failed
 | stats count by src_ip
 | sort -count
 
-# Authentication Timeline
-index=linux_logs sourcetype=linux_secure
-| timechart count by action
+# Privilege Escalation by User
+index=linux_logs sourcetype=linux_secure sudo
+| rex field=_raw "(?i)(?<sudo_user>hammad|root)"
+| stats count by sudo_user
 
 # Windows Failed Logins
 index=windows_logs EventCode=4625
@@ -187,6 +199,11 @@ index=windows_logs EventCode=4625
 index=windows_logs sourcetype="WinEventLog:Security" EventCode=4688
 | search "*powershell*"
 | stats count
+
+# Persistence & Anti-Forensics Timeline
+index=windows_logs (EventCode=4698 OR EventCode=1102 OR EventCode=104)
+| table _time, EventCode, sourcetype
+| sort _time
 ```
 
 ---
@@ -204,6 +221,9 @@ index=windows_logs sourcetype="WinEventLog:Security" EventCode=4688
 | Jul 5, 2026 | Dashboards 2-5 complete — all 30 panels live |
 | Jul 8, 2026 | All 10 detection alerts deployed and active |
 | Jul 9, 2026 | Sysmon ACL limitation identified, documented, workaround built |
+| Jul 17, 2026 | All 8 attack simulations executed, 10/10 alerts confirmed triggered |
+| Jul 19, 2026 | All 4 threat hunts completed, full kill chain reconstructed |
+| Jul 19, 2026 | Final lab report published with embedded evidence |
 
 ---
 
@@ -216,5 +236,8 @@ index=windows_logs sourcetype="WinEventLog:Security" EventCode=4688
 *Part of a complete cybersecurity portfolio built command
 by command in a real lab environment.*
 
-**Connect:** [LinkedIn](https://linkedin.com/in/hammad-khan101)
-**GitHub:** [github.com/HK101-cyber](https://github.com/HK101-cyber)
+**Connect:**
+- **LinkedIn:** [hammad-khan-sec](https://www.linkedin.com/in/hammad-khan-sec)
+- **TryHackMe:** [PentesterHK](https://tryhackme.com/p/PentesterHK)
+- **LetsDefend:** [HK101cyber](https://app.letsdefend.io/user/HK101cyber)
+- **GitHub:** [github.com/HK101-cyber](https://github.com/HK101-cyber)
